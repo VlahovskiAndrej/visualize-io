@@ -1,0 +1,267 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org/" lang="en">
+<head>
+    <title>Data Visualization</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script> <!-- Include the Data Labels plugin -->
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+        }
+        .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            width: 100%;
+            max-width: 1200px;
+            gap: 30px;
+        }
+        .controls {
+            flex: 0 0 300px;
+            display: flex;
+            flex-direction: column;
+        }
+        .chart-container {
+            flex: 1;
+            width: 900px;
+            height: 600px;
+        }
+        select {
+            padding: 10px;
+            font-size: 16px;
+            width: 100%;
+            margin-top: 10px;
+        }
+        label {
+            font-size: 18px;
+            margin-top: 30px;
+        }
+        .statistics {
+            margin-top: 30px;
+            padding: 15px;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+            background-color: #f9f9f9;
+        }
+        .statistics h3 {
+            margin: 0 0 15px;
+        }
+        .statistics p {
+            margin: 5px 0;
+            font-size: 16px;
+        }
+    </style>
+</head>
+<body>
+<img style="width: 150px !important; margin-bottom: 15px;" src="https://i.ibb.co/1GM90TD/img.png" alt="">
+
+<div class="container">
+    <!-- Controls on the left -->
+    <div class="controls">
+        <!-- Dropdown to select chart type -->
+        <label for="chartTypeSelect">Chart type:</label>
+        <select id="chartTypeSelect" onchange="updateChartType()">
+            <option value="bar">Bar Chart</option>
+            <option value="line">Line Chart</option>
+            <option value="pie">Pie Chart</option>
+            <option value="radar">Radar Chart</option>
+            <option value="doughnut">Doughnut Chart</option>
+            <option value="polarArea">Polar Area Chart</option>
+            <option value="bubble">Bubble Chart</option>
+            <option value="scatter">Scatter Chart</option>
+        </select>
+
+        <!-- Dropdown to select multiple columns to exclude -->
+        <label for="excludeColumnSelect">Columns to exclude:</label>
+        <select id="excludeColumnSelect" multiple="multiple" onchange="updateExcludedColumns()">
+            <th:block th:each="label : ${labels}">
+                <option th:value="${label}" th:text="${label}"></option>
+            </th:block>
+        </select>
+
+        <!-- Dropdown to select column for statistics -->
+        <label for="statisticsColumnSelect">Select column for statistics:</label>
+        <select id="statisticsColumnSelect" onchange="updateStatistics()">
+            <th:block th:each="label : ${labels}">
+                <option th:value="${label}" th:text="${label}"></option>
+            </th:block>
+        </select>
+
+        <!-- Section for displaying statistics -->
+        <div class="statistics">
+            <h3>Statistics</h3>
+            <p><strong>Mean:</strong> <span id="mean"></span></p>
+            <p><strong>Median:</strong> <span id="median"></span></p>
+            <p><strong>Max:</strong> <span id="max"></span></p>
+            <p><strong>Min:</strong> <span id="min"></span></p>
+        </div>
+    </div>
+
+    <!-- Chart on the right -->
+    <div class="chart-container">
+        <canvas id="myChart" width="800" height="600"></canvas> <!-- Adjusted width and height -->
+    </div>
+</div>
+
+<div class="container">
+    <h4>Feature Importance:</h4>
+    <h4>Feature Correlation:</h4>
+</div>
+
+<script th:inline="javascript">
+    // Thymeleaf will insert the JSON-formatted data directly into the JavaScript
+    var labels = /*[[${labels}]]*/ [];
+    var data = /*[[${data}]]*/ [];
+
+    // Initialize chart type as 'bar'
+    // Initialize chart type as 'bar'
+    var chartType = 'bar';
+
+    // Initialize filtered labels and data
+    var filteredLabels = labels.slice();  // Create a copy of labels
+    var filteredData = data.slice();  // Create a copy of data
+
+    // Initialize selected column for statistics
+    var selectedColumn = labels[0];
+
+    // Chart configuration
+    var chartConfig = {
+        type: chartType,
+        data: {
+            labels: filteredLabels,
+            datasets: [{
+                label: 'Data',
+                data: filteredData.map((item, index) => ({x: index, y: item})), // Default to scatter plot format
+                backgroundColor: 'rgba(38,78,238,0.2)',
+                borderColor: 'rgb(52,85,252)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            indexAxis: 'x', // Adjust if needed for different chart types
+            scales: {
+                x: {
+                    type: 'linear',
+                    beginAtZero: true
+                },
+                y: {
+                    type: 'linear',
+                    beginAtZero: true
+                }
+            },
+            plugins: {
+                datalabels: {
+                    anchor: 'end',
+                    align: 'end',
+                    color: 'black',
+                    formatter: function(value) {
+                        return value.y;
+                    }
+                }
+            }
+        },
+        plugins: [ChartDataLabels]
+    };
+
+    // Create the chart
+    var ctx = document.getElementById('myChart').getContext('2d');
+    var myChart = new Chart(ctx, chartConfig);
+
+    // Function to update chart type
+    function updateChartType() {
+        // Get selected chart type from dropdown
+        var selectedChartType = document.getElementById('chartTypeSelect').value;
+
+        // Destroy the previous chart instance to avoid conflicts
+        myChart.destroy();
+
+        // Update chart configuration based on selected type
+        chartConfig.type = selectedChartType;
+
+        // Adjust chart data and options based on chart type
+        if (selectedChartType === 'scatter') {
+            // Scatter plot data format
+            chartConfig.data.datasets[0].data = filteredData.map((item, index) => ({x: index, y: item}));
+            chartConfig.options.scales.x.type = 'linear'; // Scatter plots need linear x-axis
+            chartConfig.options.scales.y.type = 'linear'; // Scatter plots need linear y-axis
+        } else {
+            // Default data format for other charts
+            chartConfig.data.datasets[0].data = filteredData;
+            chartConfig.options.scales.x.type = 'category'; // Default type for other charts
+            chartConfig.options.scales.y.type = 'linear'; // Default y-axis type
+        }
+
+        // Recreate the chart with the new configuration
+        myChart = new Chart(ctx, chartConfig);
+    }
+
+    // Function to update excluded columns
+    function updateExcludedColumns() {
+        // Get selected columns to exclude
+        var selectedColumns = Array.from(document.getElementById('excludeColumnSelect').selectedOptions)
+            .map(option => option.value);
+
+        // Filter labels and data based on selected columns to exclude
+        filteredLabels = labels.filter((label, index) => !selectedColumns.includes(label));
+        filteredData = data.filter((value, index) => !selectedColumns.includes(labels[index]));
+
+        // Update chart data
+        if (chartType === 'scatter') {
+            chartConfig.data.datasets[0].data = filteredData.map((item, index) => ({x: index, y: item}));
+        } else {
+            chartConfig.data.labels = filteredLabels;
+            chartConfig.data.datasets[0].data = filteredData;
+        }
+
+        // Update statistics
+        updateStatistics();
+
+        // Update chart
+        myChart.update();
+    }
+
+    // Function to update statistics based on selected column
+    function updateStatistics() {
+        // Get selected column for statistics
+        selectedColumn = document.getElementById('statisticsColumnSelect').value;
+
+        // Find index of selected column
+        var columnIndex = labels.indexOf(selectedColumn);
+
+        // Filter data based on selected column
+        var columnData = data[columnIndex] ? [data[columnIndex]] : [];
+
+        if (columnData.length === 0) {
+            document.getElementById('mean').textContent = 'N/A';
+            document.getElementById('median').textContent = 'N/A';
+            document.getElementById('max').textContent = 'N/A';
+            document.getElementById('min').textContent = 'N/A';
+            return;
+        }
+
+        var sortedData = [...columnData].sort((a, b) => a - b);
+        var mean = sortedData.reduce((acc, value) => acc + value, 0) / sortedData.length;
+        var median = sortedData.length % 2 === 0
+            ? (sortedData[sortedData.length / 2 - 1] + sortedData[sortedData.length / 2]) / 2
+            : sortedData[Math.floor(sortedData.length / 2)];
+        var max = Math.max(...sortedData);
+        var min = Math.min(...sortedData);
+
+        document.getElementById('mean').textContent = mean.toFixed(2);
+        document.getElementById('median').textContent = median.toFixed(2);
+        document.getElementById('max').textContent = max.toFixed(2);
+        document.getElementById('min').textContent = min.toFixed(2);
+    }
+
+    // Initial statistics update
+    updateStatistics();
+
+</script>
+</body>
+</html>

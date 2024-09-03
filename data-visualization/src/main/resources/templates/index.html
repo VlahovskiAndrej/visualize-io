@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="en">
+<head>
+    <title>Data visualization</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+            min-height: 100vh;
+            margin: 0;
+            font-family: Arial, sans-serif;
+        }
+        h1 {
+            font-size: 2em;
+            margin-bottom: 20px;
+        }
+        form {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 20px;
+            padding: 20px;
+            border: 1px solid #ccc;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        label {
+            font-size: 1.2em;
+        }
+        input[type="file"] {
+            font-size: 1.2em;
+        }
+        button {
+            padding: 10px 20px;
+            font-size: 1.2em;
+            border: none;
+            border-radius: 5px;
+            background-color: #1C468A;
+            color: white;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #45a049;
+        }
+        img {
+            margin-top: 20px;
+            width: 700px;
+        }
+    </style>
+</head>
+<body>
+<img style="width: 150px !important; margin-bottom: 50px;" src="https://i.ibb.co/1GM90TD/img.png" alt="">
+<form method="post" enctype="multipart/form-data" th:action="@{/upload}">
+    <div>
+        <input type="file" id="file" name="file" />
+    </div>
+    <div>
+        <button type="submit">Visualize</button>
+    </div>
+</form>
+
+<!-- Add an image below the form -->
+<img src="https://www.techved.com/resources/images/data-visualization-banner.svg" alt="Placeholder Image" />
+</body>
+</html>
