@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org" lang="en">
 <head>
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
     <title>Data visualization</title>
     <style>
         body {
@@ -22,9 +23,9 @@
             align-items: center;
             gap: 20px;
             padding: 20px;
-            border: 1px solid #ccc;
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+            /*border: 1px solid #ccc;*/
+            /*border-radius: 10px;*/
+            /*box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);*/
         }
         label {
             font-size: 1.2em;
@@ -37,31 +38,110 @@
             font-size: 1.2em;
             border: none;
             border-radius: 5px;
-            background-color: #1C468A;
+            background-color: #FF7F6E;
             color: white;
             cursor: pointer;
         }
         button:hover {
-            background-color: #45a049;
+            background-color: #ff644d;
         }
         img {
-            margin-top: 20px;
+            /*margin-top: 20px;*/
             width: 700px;
         }
+
+        nav.navbar {
+            padding: 18px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 9999;
+            transition: 0.32s ease-in-out;
+        }
+        nav.navbar.scrolled {
+            padding: 0px 0;
+            background-color: #121212;
+        }
+        nav.navbar a.navbar-brand {
+            width: 9%;
+        }
+        nav.navbar .navbar-nav .nav-link.navbar-link {
+            font-weight: 400;
+            color: #0c0c0c !important;
+            letter-spacing: 0.8px;
+            padding: 0 25px;
+            font-size: 18px;
+            opacity: 0.75;
+        }
+        nav.navbar .navbar-nav a.nav-link.navbar-link:hover,
+        nav.navbar .navbar-nav a.nav-link.navbar-link.active {
+            opacity: 1;
+        }
+        span > .navbar-text {
+            display: flex;
+            align-items: center;
+        }
+
     </style>
 </head>
 <body>
-<img style="width: 150px !important; margin-bottom: 50px;" src="https://i.ibb.co/1GM90TD/img.png" alt="">
-<form method="post" enctype="multipart/form-data" th:action="@{/upload}">
-    <div>
-        <input type="file" id="file" name="file" />
+
+<nav class="navbar navbar-expand-md navbar-light bg-light"
+     style="padding: 18px 0; position: fixed; width: 100%; top: 0; z-index: 9999; transition: 0.32s ease-in-out;"
+     th:classappend="${scrolled} ? 'scrolled' : ''">
+    <div class="container">
+        <a class="navbar-brand"
+           th:href="@{http://localhost:3000/}"
+           th:onclick="'updateActiveLink(\'home\')'"
+           style="width: 9%;">
+            <img src="https://i.imgur.com/7AX7gsy.png" alt="Logo" style="width: 200px; height: auto;">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link navbar-link"
+                       th:href="@{http://localhost:3000/datasets/}"
+                       th:classappend="${activeLink == 'datasets'} ? 'active' : ''"
+                       th:onclick="'updateActiveLink(\'datasets\')'"
+                       style="font-weight: 400; color: #0c0c0c !important; letter-spacing: 0.8px; padding: 0 25px; font-size: 18px; opacity: 0.75;">
+                        Visualizations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link navbar-link"
+                       th:href="@{http://localhost:8080/}"
+                       th:classappend="${activeLink == 'new-visualization'} ? 'active' : ''"
+                       th:onclick="'updateActiveLink(\'new-visualization\')'"
+                       style="font-weight: 400; color: #0c0c0c !important; letter-spacing: 0.8px; padding: 0 25px; font-size: 18px; opacity: 0.75;">
+                        + New visualization
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!--<img style="width: 150px !important; margin-bottom: 50px;" src="https://i.ibb.co/1GM90TD/img.png" alt="">-->
+<div style="display: flex;">
+<form method="post" enctype="multipart/form-data" th:action="@{/upload}" style="margin-top: 60px;">
+    <div style="display: flex; flex-direction: column; justify-content: center; align-items: center;">
+        <h1 style="text-align: start; font-size: 30px; font-weight: 700; color: #FF7F6E" >Upload your data</h1>
+        <div style="width: 400px; margin-bottom: 40px; text-align: justify" >
+            Your sensitive data is secure with us, thanks to advanced encryption and strict access controls. Our systems are regularly updated to protect against unauthorized access. Upload your desired data in .csv        </div>
+        <input style="margin-left: 100px" type="file" id="file" name="file" />
     </div>
     <div>
         <button type="submit">Visualize</button>
     </div>
+
+<!--    <img style="width: 250px;" src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTG4SuLtcUzphfd38_cujm7hsxFzBuhttpZPw&s" alt="">-->
 </form>
 
 <!-- Add an image below the form -->
-<img src="https://www.techved.com/resources/images/data-visualization-banner.svg" alt="Placeholder Image" />
+<img src="https://i.ibb.co/j8cHXRn/Screenshot-2024-09-19-193004.png" alt="Placeholder Image" />
+</div>
 </body>
 </html>

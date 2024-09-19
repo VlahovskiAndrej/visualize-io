@@ -4,6 +4,8 @@
     <title>Data Visualization</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2.0.0"></script> <!-- Include the Data Labels plugin -->
+    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -13,6 +15,7 @@
             flex-direction: column;
             min-height: 100vh;
             margin: 0;
+            margin-top: 35px;
         }
         .container {
             display: flex;
@@ -56,10 +59,80 @@
             margin: 5px 0;
             font-size: 16px;
         }
+
+        nav.navbar {
+            padding: 18px 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 9999;
+            transition: 0.32s ease-in-out;
+        }
+        nav.navbar.scrolled {
+            padding: 0px 0;
+            background-color: #121212;
+        }
+        nav.navbar a.navbar-brand {
+            width: 9%;
+        }
+        nav.navbar .navbar-nav .nav-link.navbar-link {
+            font-weight: 400;
+            color: #0c0c0c !important;
+            letter-spacing: 0.8px;
+            padding: 0 25px;
+            font-size: 18px;
+            opacity: 0.75;
+        }
+        nav.navbar .navbar-nav a.nav-link.navbar-link:hover,
+        nav.navbar .navbar-nav a.nav-link.navbar-link.active {
+            opacity: 1;
+        }
+        span > .navbar-text {
+            display: flex;
+            align-items: center;
+        }
     </style>
 </head>
 <body>
-<img style="width: 150px !important; margin-bottom: 15px;" src="https://i.ibb.co/1GM90TD/img.png" alt="">
+<!--<img style="width: 150px !important; margin-bottom: 15px;" src="https://i.ibb.co/1GM90TD/img.png" alt="">-->
+
+<nav class="navbar navbar-expand-md navbar-light bg-light"
+     style="padding: 18px 0; position: fixed; width: 100%; top: 0; z-index: 9999; transition: 0.32s ease-in-out;"
+     th:classappend="${scrolled} ? 'scrolled' : ''">
+    <div class="container">
+        <a class="navbar-brand"
+           th:href="@{http://localhost:3000/}"
+           th:onclick="'updateActiveLink(\'home\')'"
+           style="width: 9%;">
+            <img src="https://i.imgur.com/7AX7gsy.png" alt="Logo" style="width: 200px; height: auto;">
+        </a>
+        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+            <ul class="navbar-nav ml-auto">
+                <li class="nav-item">
+                    <a class="nav-link navbar-link"
+                       th:href="@{http://localhost:3000/datasets/}"
+                       th:classappend="${activeLink == 'datasets'} ? 'active' : ''"
+                       th:onclick="'updateActiveLink(\'datasets\')'"
+                       style="font-weight: 400; color: #0c0c0c !important; letter-spacing: 0.8px; padding: 0 25px; font-size: 18px; opacity: 0.75;">
+                        Visualizations
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a class="nav-link navbar-link"
+                       th:href="@{http://localhost:8080/}"
+                       th:classappend="${activeLink == 'new-visualization'} ? 'active' : ''"
+                       th:onclick="'updateActiveLink(\'new-visualization\')'"
+                       style="font-weight: 400; color: #0c0c0c !important; letter-spacing: 0.8px; padding: 0 25px; font-size: 18px; opacity: 0.75;">
+                        + New visualization
+                    </a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
 <div class="container">
     <!-- Controls on the left -->
@@ -109,11 +182,6 @@
     </div>
 </div>
 
-<div class="container">
-    <h4>Feature Importance:</h4>
-    <h4>Feature Correlation:</h4>
-</div>
-
 <script th:inline="javascript">
     // Thymeleaf will insert the JSON-formatted data directly into the JavaScript
     var labels = /*[[${labels}]]*/ [];
@@ -138,8 +206,8 @@
             datasets: [{
                 label: 'Data',
                 data: filteredData.map((item, index) => ({x: index, y: item})), // Default to scatter plot format
-                backgroundColor: 'rgba(38,78,238,0.2)',
-                borderColor: 'rgb(52,85,252)',
+                backgroundColor: 'rgba(255, 127, 110,0.2)',
+                borderColor: 'rgb(255, 127, 110)',
                 borderWidth: 1
             }]
         },
